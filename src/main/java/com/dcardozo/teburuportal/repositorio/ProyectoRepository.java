@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface ProyectoRepository extends JpaRepository<Proyecto, Integer> {
@@ -16,8 +17,8 @@ public interface ProyectoRepository extends JpaRepository<Proyecto, Integer> {
     List<Proyecto> proyectosByArea(Integer id_area);
 
     @Query("from Proyecto p where p.id_proyecto = ?1")
-    Proyecto proyectoById(Integer id_proyecto);
+    Optional<Proyecto> proyectoById(Integer id_proyecto);
 
-
+    Proyecto findProyectoByNombre(String nombre);
 
 }

@@ -1,6 +1,7 @@
 package com.dcardozo.teburuportal.servicio.servicioImpl;
 
 import com.dcardozo.teburuportal.dominio.Archivo;
+import com.dcardozo.teburuportal.exception.ErrorProcessException;
 import com.dcardozo.teburuportal.repositorio.ArchivoRepository;
 import com.dcardozo.teburuportal.servicio.ArchivoService;
 import com.dcardozo.teburuportal.servicio.TablaService;
@@ -35,7 +36,7 @@ public class ArchivoServiceImpl implements ArchivoService {
 
 
     @Override
-    public String uploadArchivo(MultipartFile multipartFiles, Integer id_tabla, Integer id_usuario) throws IOException {
+    public String uploadArchivo(MultipartFile multipartFiles, Integer id_tabla, Integer id_usuario) throws ErrorProcessException, IOException {
         try {
 
             this.inputStream= multipartFiles.getInputStream();
@@ -96,7 +97,7 @@ public class ArchivoServiceImpl implements ArchivoService {
                                     System.out.println(this.esquemaBaseDatos.indexOf(elem));
                                     System.out.println(cell.getColumnIndex());
 
-                                    return this.mensaje = "El archivo ingresado no tiene los mismos nombres de columnas que los establecidos en el schema, la columna '" + indxFor + "' no pertenece a la estructura de la tabla";
+                                    return this.mensaje = "El archivo ingresado no tiene los mismos nombres de columnas que los establecidos en el schema, la columna '" + (indxFor + 1) + "' no pertenece a la estructura de la tabla";
                                 }
                                 indxFor++;
                             }
@@ -121,7 +122,7 @@ public class ArchivoServiceImpl implements ArchivoService {
                                 if (row.getCell(indx) == null || row.getCell(indx).getCellType() == CellType.BLANK) {
 //                                    System.out.println(indx + " - " + cell.getRowIndex());
 //                                    System.out.println("valor "+row.getCell(indx));
-                                    return this.mensaje = "La columna '" + nombre + "' es de tipo NOTNULL y existen datos que son NULL o BLANK en la fila: " + cell.getRowIndex();
+                                    return this.mensaje = "La columna '" + nombre + "' es de tipo NOTNULL y existen datos que son NULL o BLANK en la fila: " + (cell.getRowIndex() + 1);
                             }} else {
                                 if (row.getCell(indx) == null || row.getCell(indx).getCellType() == CellType.BLANK) {
                                     continue;
@@ -142,7 +143,7 @@ public class ArchivoServiceImpl implements ArchivoService {
                                             case "float":
                                             case "double":
                                                 if (row.getCell(indx).getCellType() != CellType.NUMERIC) {
-                                                    return this.mensaje = "La columna '"+ nombre +"' es del tipo de dato 'numérico' y existe un dato que no es de este mismo tipo en la fila: " + cell.getRowIndex() ;
+                                                    return this.mensaje = "La columna '"+ nombre +"' es del tipo de dato 'numérico' y existe un dato que no es de este mismo tipo en la fila: " + (cell.getRowIndex() + 1);
                                                 }
                                                 break;
                                             case "tinytext":
@@ -152,7 +153,7 @@ public class ArchivoServiceImpl implements ArchivoService {
                                             case "mediumtext":
                                             case "blob":
                                                 if (row.getCell(indx).getCellType() != CellType.STRING) {
-                                                    return this.mensaje = "La columna '"+ nombre +"' es de tipo de dato 'caracteres o cadenas de texto' y existe un dato que no es de este mismo tipo en la fila: " + cell.getRowIndex();
+                                                    return this.mensaje = "La columna '"+ nombre +"' es de tipo de dato 'caracteres o cadenas de texto' y existe un dato que no es de este mismo tipo en la fila: " + (cell.getRowIndex() + 1);
                                                 }
                                                 break;
                                             default:
@@ -164,8 +165,8 @@ public class ArchivoServiceImpl implements ArchivoService {
 
             // Cerrar el file inputstream
             inputStream.close();
-        } catch (IOException e) {
-            e.printStackTrace();
+        } catch (RuntimeException | IOException e) {
+            throw new ErrorProcessException(e.getMessage());
         }
         //ACA REUNIR LO NECESARIO PARA ENVIAR EL OBJETO ARCHIVO A LA BASE DE DATOS
         String nombreTabla = serviceTabla.getNombre(id_tabla);

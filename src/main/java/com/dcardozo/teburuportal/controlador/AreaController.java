@@ -1,6 +1,7 @@
 package com.dcardozo.teburuportal.controlador;
 
 import com.dcardozo.teburuportal.dominio.Area;
+import com.dcardozo.teburuportal.exception.ErrorProcessException;
 import com.dcardozo.teburuportal.servicio.AreaService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -29,26 +30,20 @@ public class AreaController {
 
     @GetMapping("")
     @ApiOperation(value = "Obtener todas las áreas")
-    public ResponseEntity<List<Area>> getAllAreas(){
+    public ResponseEntity<List<Area>> getAllAreas() throws ErrorProcessException {
         return ResponseEntity.ok(service.getAll());
     }
 
     @GetMapping("/{id_area}")
     @ApiOperation(value = "Obtener area por id_area")
-    public ResponseEntity<Area> getAreaById(@PathVariable Integer id_area){
+    public ResponseEntity<Area> getAreaById(@PathVariable Integer id_area) throws ErrorProcessException {
         return ResponseEntity.ok(service.buscarByIdServicio(id_area));
     }
 
     @PostMapping
     @ApiOperation(value = "Crear area")
-    public ResponseEntity<Area> postNuevaArea(@Valid @RequestBody Area area){
+    public ResponseEntity<Area> postNuevaArea(@Valid @RequestBody Area area) throws ErrorProcessException {
         return ResponseEntity.status(HttpStatus.CREATED).body(service.crearAreaServicio(area));
-    }
-
-    @GetMapping("/name/{nombre}")
-    @ApiIgnore
-    public ResponseEntity<?> findNombre(@PathVariable String nombre){
-        return service.findNombreArea(nombre);
     }
 
 }

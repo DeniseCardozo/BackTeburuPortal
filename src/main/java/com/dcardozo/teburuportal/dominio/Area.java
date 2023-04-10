@@ -1,12 +1,12 @@
 package com.dcardozo.teburuportal.dominio;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import java.util.List;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
 
 @Data
 @NoArgsConstructor
@@ -20,8 +20,7 @@ public class Area {
     @Column(name = "id_area")
     private Integer id_area;
     @Column(length = 100, nullable = false)
+    @NotBlank(message = "Area name cannot be null or empty")
+    @NotEmpty(message = "Area name cannot be null or empty")
     private String nombre;
-//    @JsonIgnore
-//    @OneToMany(mappedBy = "area")
-//    List<Tabla> tablas;
 }
