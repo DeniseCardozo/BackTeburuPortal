@@ -4,6 +4,7 @@ import com.dcardozo.teburuportal.dominio.Usuario;
 import com.dcardozo.teburuportal.dto.UsuarioLogInDTO;
 import com.dcardozo.teburuportal.dto.UsuarioSignUpDTO;
 import com.dcardozo.teburuportal.dto.mapper.UsuarioMapper;
+import com.dcardozo.teburuportal.exception.ErrorProcessException;
 import com.dcardozo.teburuportal.servicio.UsuarioService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -12,6 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -34,29 +36,15 @@ public class UsuarioController {
 
     @PostMapping("/login")
     @ApiOperation(value = "LogIn usuario")
-    public ResponseEntity<?> logIn(@RequestBody UsuarioLogInDTO usuarioLogIn){
-        Usuario usuario;
-        try {
-            usuario = service.logInUser(usuarioMapper.userLogindtoToEntity(usuarioLogIn));
-            return ResponseEntity.status(HttpStatus.FOUND).body(usuarioMapper.entityToUsuarioPosLoginwithIdDTO(usuario));
-        } catch (RuntimeException e) {
-            response.put("MensajeError","Email o contraseña incorrecto, por favor intentente nuevamente.");
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
-        }
+    public ResponseEntity<?> logIn(@Valid @RequestBody UsuarioLogInDTO usuarioLogIn) throws ErrorProcessException {
+        Usuario usuario = service.logInUser(usuarioMapper.userLogindtoToEntity(usuarioLogIn));
+        return ResponseEntity.status(HttpStatus.FOUND).body(usuarioMapper.entityToUsuarioPosLoginwithIdDTO(usuario));
     }
 
     @PostMapping("/signUp")
     @ApiOperation(value = "SignUp usuario")
-    public  ResponseEntity<?> signUp(@RequestBody UsuarioSignUpDTO usuarioSignUp) {
-        Usuario usuario;
-        try {
-            usuario = service.crearUsuario(usuarioMapper.usuarioSignupDTOToEntity(usuarioSignUp));
+    public  ResponseEntity<?> signUp(@Valid @RequestBody UsuarioSignUpDTO usuarioSignUp) throws ErrorProcessException {
+        Usuario usuario = service.crearUsuario(usuarioMapper.usuarioSignupDTOToEntity(usuarioSignUp));
             return ResponseEntity.status(HttpStatus.CREATED).body(usuarioMapper.entityToUsuarioLogInDTO(usuario));
-        } catch (RuntimeException e) {
-            this.response.put("Mensaje","Este usuario ya existe en la Base de Datos de Teburu Portal.");
-            return new ResponseEntity<>(this.response, HttpStatus.FOUND) ;
-        }
     }
-
-
 }

@@ -50,14 +50,4 @@ public class AreaServiceImpl implements AreaService {
             throw new ErrorProcessException(ERROR_NOT_FOUND + e.getMessage());
         }
     }
-
-//    @Override
-//    public ResponseEntity<?> findNombreArea(String nombre) {
-//        Area area = repository.findAreaByNombre(nombre);
-//        if (area != null){
-//            return new ResponseEntity<>(HttpStatus.NOT_FOUND) ;
-//        } else {
-//            return new ResponseEntity<>(HttpStatus.FOUND) ;
-//        }
-//    }
 }

@@ -26,7 +26,6 @@ public class ArchivoController {
     @PostMapping("/upload/{id_tabla}/{id_usuario}")
     @ApiOperation(value = "Subir archivo, analizarlo y guardarlo")
     public String uploadFiles(@RequestParam("files") MultipartFile multipartFiles, @PathVariable Integer id_tabla, @PathVariable Integer id_usuario) throws IOException, ErrorProcessException {
-//        return service.uploadArchivo(multipartFiles.getInputStream(), id_tabla);
         return service.uploadArchivo(multipartFiles, id_tabla, id_usuario);
 
     }
