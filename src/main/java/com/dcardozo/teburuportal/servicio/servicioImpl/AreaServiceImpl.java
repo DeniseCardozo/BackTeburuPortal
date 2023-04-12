@@ -6,19 +6,16 @@ import com.dcardozo.teburuportal.exception.ErrorProcessException;
 import com.dcardozo.teburuportal.exception.NotFoundException;
 import com.dcardozo.teburuportal.repositorio.AreaRepository;
 import com.dcardozo.teburuportal.servicio.AreaService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+@RequiredArgsConstructor
 @Service
 public class AreaServiceImpl implements AreaService {
     private final String ERROR_NOT_FOUND = "During the process an error occurred: ";
     private final AreaRepository repository;
-    @Autowired
-    public AreaServiceImpl(AreaRepository repository) {
-        this.repository = repository;
-    }
 
     @Override
     public List<Area> getAll() throws ErrorProcessException {

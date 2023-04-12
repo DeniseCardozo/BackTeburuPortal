@@ -5,6 +5,7 @@ import com.dcardozo.teburuportal.exception.ErrorProcessException;
 import com.dcardozo.teburuportal.repositorio.ArchivoRepository;
 import com.dcardozo.teburuportal.servicio.ArchivoService;
 import com.dcardozo.teburuportal.servicio.TablaService;
+import lombok.RequiredArgsConstructor;
 import org.apache.poi.ss.usermodel.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -15,6 +16,7 @@ import java.io.InputStream;
 import java.util.Date;
 import java.util.List;
 
+@RequiredArgsConstructor
 @Service
 public class ArchivoServiceImpl implements ArchivoService {
     private final ArchivoRepository repository;
@@ -26,14 +28,6 @@ public class ArchivoServiceImpl implements ArchivoService {
                                 };
     Integer maxCantidadColumnas;
     String mensaje;
-
-    @Autowired
-    public ArchivoServiceImpl(TablaService serviceTabla,
-                              ArchivoRepository repository) {
-        this.serviceTabla = serviceTabla;
-        this.repository = repository;
-    }
-
 
     @Override
     public String uploadArchivo(MultipartFile multipartFiles, Integer id_tabla, Integer id_usuario) throws ErrorProcessException, IOException {

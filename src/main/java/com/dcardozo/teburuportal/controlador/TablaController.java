@@ -5,7 +5,7 @@ import com.dcardozo.teburuportal.exception.ErrorProcessException;
 import com.dcardozo.teburuportal.servicio.TablaService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -15,19 +15,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-
+@RequiredArgsConstructor
 @CrossOrigin("http://localhost:4200") //para problemas de CORS
 @RestController
 @RequestMapping("/tabla")
 @Api(value = "Controlador de tabla", tags = "Controlador de TABLA")
 public class TablaController {
-
     Map<String, Object> response = new HashMap<>();
     private final TablaService service;
-    @Autowired
-    public TablaController(TablaService service) {
-        this.service = service;
-    }
 
     @GetMapping("/proyecto/{id_proyecto}")
     @ApiOperation(value = "Obtener todas las tablas por id_proyecto")
@@ -81,5 +76,4 @@ public class TablaController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
         }
     }
-
 }

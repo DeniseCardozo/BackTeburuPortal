@@ -6,7 +6,7 @@ import com.dcardozo.teburuportal.exception.ErrorProcessException;
 import com.dcardozo.teburuportal.exception.NotFoundException;
 import com.dcardozo.teburuportal.repositorio.TablaRepository;
 import com.dcardozo.teburuportal.servicio.TablaService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -14,17 +14,12 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 
+@RequiredArgsConstructor
 @Service
 public class TablaServiceImpl implements TablaService {
     private final String ERROR_NOT_FOUND = "During the process an error occurred: ";
     Tabla tablaActualizada = new Tabla();
     private final TablaRepository repository;
-
-    @Autowired
-    public TablaServiceImpl(TablaRepository repository) {
-        this.repository = repository;
-    }
-
 
     @Override
     public List<Tabla> getAllTablasByIdProyecto(Integer id_proyecto) throws ErrorProcessException {
@@ -115,8 +110,5 @@ public class TablaServiceImpl implements TablaService {
         } catch (RuntimeException e) {
             throw new ErrorProcessException(ERROR_NOT_FOUND + e.getMessage());
         }
-
     }
-
-
 }

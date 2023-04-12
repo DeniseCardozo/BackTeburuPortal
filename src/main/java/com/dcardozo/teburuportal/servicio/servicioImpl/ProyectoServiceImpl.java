@@ -6,20 +6,16 @@ import com.dcardozo.teburuportal.exception.ErrorProcessException;
 import com.dcardozo.teburuportal.exception.NotFoundException;
 import com.dcardozo.teburuportal.repositorio.ProyectoRepository;
 import com.dcardozo.teburuportal.servicio.ProyectoService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+@RequiredArgsConstructor
 @Service
 public class ProyectoServiceImpl implements ProyectoService {
     private final String ERROR_NOT_FOUND = "During the process an error occurred: ";
     private final ProyectoRepository repository;
-    @Autowired
-    public ProyectoServiceImpl(ProyectoRepository repository) {
-        this.repository = repository;
-    }
-
 
     @Override
     public List<Proyecto> getAllProyectosByIdArea(Integer id_area) throws ErrorProcessException {

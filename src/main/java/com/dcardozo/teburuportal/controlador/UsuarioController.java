@@ -8,31 +8,21 @@ import com.dcardozo.teburuportal.exception.ErrorProcessException;
 import com.dcardozo.teburuportal.servicio.UsuarioService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.util.HashMap;
-import java.util.Map;
 
-
+@RequiredArgsConstructor
 @CrossOrigin("http://localhost:4200") //para problemas de CORS
 @RestController
 @RequestMapping("/usuario")
 @Api(value = "Controlador de usuario", tags = "Controlador de USUARIO")
 public class UsuarioController {
-
-    Map<String, Object> response = new HashMap<>();
     private final UsuarioService service;
     private final UsuarioMapper usuarioMapper;
-    @Autowired
-    public UsuarioController(UsuarioService service,
-                             UsuarioMapper usuarioMapper) {
-        this.service = service;
-        this.usuarioMapper = usuarioMapper;
-    }
 
     @PostMapping("/login")
     @ApiOperation(value = "LogIn usuario")

@@ -5,7 +5,7 @@ import com.dcardozo.teburuportal.exception.ErrorProcessException;
 import com.dcardozo.teburuportal.servicio.AreaService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -13,19 +13,13 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import java.util.List;
 
-
+@RequiredArgsConstructor
 @CrossOrigin("http://localhost:4200") //para problemas de CORS
 @RestController
 @RequestMapping("/area")
 @Api(value = "Controlador de area", tags = "Controlador de AREA")
 public class AreaController {
-
     private final AreaService service;
-    @Autowired
-    public AreaController(AreaService service) {
-        this.service = service;
-    }
-
 
     @GetMapping("")
     @ApiOperation(value = "Obtener todas las áreas")
