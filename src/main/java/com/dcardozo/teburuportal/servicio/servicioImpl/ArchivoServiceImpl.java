@@ -7,7 +7,6 @@ import com.dcardozo.teburuportal.servicio.ArchivoService;
 import com.dcardozo.teburuportal.servicio.TablaService;
 import lombok.RequiredArgsConstructor;
 import org.apache.poi.ss.usermodel.*;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -32,7 +31,6 @@ public class ArchivoServiceImpl implements ArchivoService {
     @Override
     public String uploadArchivo(MultipartFile multipartFiles, Integer id_tabla, Integer id_usuario) throws ErrorProcessException, IOException {
         try {
-
             this.inputStream= multipartFiles.getInputStream();
             this.esquemaBaseDatos = serviceTabla.getEsquemaProcesado(id_tabla);
 
@@ -56,22 +54,11 @@ public class ArchivoServiceImpl implements ArchivoService {
 
                     // Iterar cada celda nombre de columna
                     if (cell.getRowIndex() == 0 ) {
-//                        this.maxCantidadColumnas = this.esquemaBaseDatos.size();
 
                         if(row.getLastCellNum() == this.esquemaBaseDatos.size()) {
-//                            System.out.println(cell.getStringCellValue());
-//                            System.out.println(cell.getRow());
-//                            System.out.println("valor "+ row.getCell(indx) + " "+cell.getColumnIndex());
-//                        }
-
                             short indxFor = 0;
                             for (String[] elem : this.esquemaBaseDatos) {
                                 String nombre = elem[0].toLowerCase();
-//                                String valorCeldaLowerCase = String.valueOf(row.getCell(indx)).toLowerCase();
-
-//                                System.out.println(valorCeldaLowerCase);
-//                                System.out.println(row.getCell(indx));
-//                                System.out.println(cell.getStringCellValue());
 
                                 if (row.getCell(indxFor) == null) {
                                     System.out.println("entro al if que usa indx");
@@ -100,10 +87,7 @@ public class ArchivoServiceImpl implements ArchivoService {
                             return this.mensaje = "El archivo ingresado no tiene la misma cantidad de columnas que las establecidas en el schema, columnas contadas: " + row.getLastCellNum() + ", esperadas: " + this.esquemaBaseDatos.size();
                         }
                     }
-
-//                    while (indx < this.maxCantidadColumnas) {
-//                        System.out.println(indx);
-
+                    //iterar en las demás celdas con datos
                     if (cell.getRowIndex() > 0) {
 
                         for (String[] elem : this.esquemaBaseDatos) {
@@ -112,10 +96,7 @@ public class ArchivoServiceImpl implements ArchivoService {
                             String nullNotNull = elem[2].toLowerCase();
 
                             if (this.esquemaBaseDatos.indexOf(elem) == indx && nullNotNull.equals("notnull")) {
-//                                System.out.println(nullNotNull);
                                 if (row.getCell(indx) == null || row.getCell(indx).getCellType() == CellType.BLANK) {
-//                                    System.out.println(indx + " - " + cell.getRowIndex());
-//                                    System.out.println("valor "+row.getCell(indx));
                                     return this.mensaje = "La columna '" + nombre + "' es de tipo NOTNULL y existen datos que son NULL o BLANK en la fila: " + (cell.getRowIndex() + 1);
                             }} else {
                                 if (row.getCell(indx) == null || row.getCell(indx).getCellType() == CellType.BLANK) {
@@ -179,8 +160,5 @@ public class ArchivoServiceImpl implements ArchivoService {
         repository.save(archivo);
 
         return this.mensaje = "Pasó todos los controles de estructura y calidad";
-
     }
-
-
 }

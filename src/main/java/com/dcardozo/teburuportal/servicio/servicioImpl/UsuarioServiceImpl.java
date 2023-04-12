@@ -29,7 +29,7 @@ public class UsuarioServiceImpl implements UsuarioService {
 
     @Override
     public Usuario crearUsuario(Usuario usuario) throws ErrorProcessException {
-        if (repository.usuarioByEmail(usuario.getEmail()) != null) {
+        if (repository.usuarioByEmail(usuario.getEmail()).isPresent()) {
             throw new BadRequestException("Este usuario ya existe en la Base de Datos de Teburu Portal.");
         }
         try {

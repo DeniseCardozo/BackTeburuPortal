@@ -2,6 +2,7 @@ package com.dcardozo.teburuportal.servicio.servicioImpl;
 
 import com.dcardozo.teburuportal.datos.DatosDummy;
 import com.dcardozo.teburuportal.dominio.Usuario;
+import com.dcardozo.teburuportal.exception.ErrorProcessException;
 import com.dcardozo.teburuportal.repositorio.UsuarioRepository;
 import com.dcardozo.teburuportal.servicio.UsuarioService;
 import org.junit.jupiter.api.BeforeEach;
@@ -34,7 +35,7 @@ class UsuarioServiceImplTest {
 
     @Test
     @DisplayName("LogIn Usuario")
-    void logInUser() {
+    void logInUser() throws ErrorProcessException {
         //given
         repository.save(DatosDummy.getUsuario1());
         repository.save(DatosDummy.getUsuario2());
@@ -75,7 +76,7 @@ class UsuarioServiceImplTest {
 
         @Test
     @DisplayName("Crear Usuario")
-    void crearUsuario() {
+    void crearUsuario() throws ErrorProcessException {
         //given
         Usuario usuario = DatosDummy.getUsuario1();
 

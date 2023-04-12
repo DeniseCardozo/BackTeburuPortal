@@ -30,8 +30,4 @@ public class Archivo {
     private Integer id_usuario;
     @Column(name = "id_tabla", nullable = false)
     private  Integer id_tabla;
-//    @ManyToOne(cascade = CascadeType.MERGE)
-//    @JoinColumn(name = "id_usuario")
-//    Usuario usuario;
-
 }
