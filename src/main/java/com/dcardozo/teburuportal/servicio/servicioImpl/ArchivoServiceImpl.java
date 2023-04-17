@@ -22,143 +22,128 @@ public class ArchivoServiceImpl implements ArchivoService {
     private final TablaService serviceTabla;
     InputStream inputStream;
     List<String[]> esquemaBaseDatos;
-    String[] todosTiposDatos = {"bit","bool","tinyint","smallint","mediumint","bigint","int","float","double",
-                            "varchar","tinytext","text","mediumtext","longtext","blob",
-                                };
+    String[] todosTiposDatos = {"bit","bool","tinyint","smallint","mediumint","bigint","int","float","double"};
     Integer maxCantidadColumnas;
     String mensaje;
+    String nombreColumna;
 
     @Override
-    public String uploadArchivo(MultipartFile multipartFiles, Integer id_tabla, Integer id_usuario) throws ErrorProcessException, IOException {
+    public String uploadArchivo(MultipartFile multipartFiles, Integer id_tabla, Integer id_usuario) throws ErrorProcessException {
         try {
-            this.inputStream= multipartFiles.getInputStream();
-            this.esquemaBaseDatos = serviceTabla.getEsquemaProcesado(id_tabla);
+            inputStream= multipartFiles.getInputStream();
+            esquemaBaseDatos = serviceTabla.getEsquemaProcesado(id_tabla);
 
-            // Obtener la instancia del libro de trabajo para el archivo XLSX
-            Workbook workbook = WorkbookFactory.create(inputStream);
+            return readAndCheckFile(inputStream, multipartFiles, id_tabla, id_usuario);
 
-            // Obtener la primera hoja del libro
-            Sheet sheet = workbook.getSheetAt(0);
-
-            System.out.println("lectura de archivo...");
-
-            //Iterar en cada fila de la hoja
-            for (Row row : sheet) {
-
-                short indx = 0;
-                    // Iterar cada celda
-                for (Cell cell : row) {
-
-                    this.maxCantidadColumnas = this.esquemaBaseDatos.size();
-                    while (indx < this.maxCantidadColumnas) {
-
-                    // Iterar cada celda nombre de columna
-                    if (cell.getRowIndex() == 0 ) {
-
-                        if(row.getLastCellNum() == this.esquemaBaseDatos.size()) {
-                            short indxFor = 0;
-                            for (String[] elem : this.esquemaBaseDatos) {
-                                String nombre = elem[0].toLowerCase();
-
-                                if (row.getCell(indxFor) == null) {
-                                    System.out.println("entro al if que usa indx");
-                                    System.out.println("indx igual a " + indx);
-                                    System.out.println("entro al if por tener null "+ row.getCell(indx));
-                                    return this.mensaje = "En el archivo ingresado existe una columna con nombre en NULL y esto no pertenece a la estructura de la tabla";
-                                }
-
-                                System.out.println(row.getCell(indxFor).getStringCellValue().toLowerCase());
-                                System.out.println(cell.getColumnIndex());
-                                System.out.println(this.esquemaBaseDatos.indexOf(elem));
-
-                                if (this.esquemaBaseDatos.indexOf(elem) == indxFor && !row.getCell(indxFor).getStringCellValue().toLowerCase().equals(nombre)) {
-                                    System.out.println("entro al if por mal nombre "+(cell.getStringCellValue()));
-                                    System.out.println("entro al if por "+ row.getCell(cell.getColumnIndex()));
-                                    System.out.println("columna nombre "+ nombre);
-                                    System.out.println(this.esquemaBaseDatos.indexOf(elem));
-                                    System.out.println(cell.getColumnIndex());
-
-                                    return this.mensaje = "El archivo ingresado no tiene los mismos nombres de columnas que los establecidos en el schema, la columna '" + (indxFor + 1) + "' no pertenece a la estructura de la tabla";
-                                }
-                                indxFor++;
-                            }
-                        }
-                        else {
-                            return this.mensaje = "El archivo ingresado no tiene la misma cantidad de columnas que las establecidas en el schema, columnas contadas: " + row.getLastCellNum() + ", esperadas: " + this.esquemaBaseDatos.size();
-                        }
-                    }
-                    //iterar en las demás celdas con datos
-                    if (cell.getRowIndex() > 0) {
-
-                        for (String[] elem : this.esquemaBaseDatos) {
-                            String nombre = elem[0];
-                            String tipo = elem[1];
-                            String nullNotNull = elem[2].toLowerCase();
-
-                            if (this.esquemaBaseDatos.indexOf(elem) == indx && nullNotNull.equals("notnull")) {
-                                if (row.getCell(indx) == null || row.getCell(indx).getCellType() == CellType.BLANK) {
-                                    return this.mensaje = "La columna '" + nombre + "' es de tipo NOTNULL y existen datos que son NULL o BLANK en la fila: " + (cell.getRowIndex() + 1);
-                            }} else {
-                                if (row.getCell(indx) == null || row.getCell(indx).getCellType() == CellType.BLANK) {
-                                    continue;
-                                }
-                            }
-
-                            if (this.esquemaBaseDatos.indexOf(elem) == indx) {
-                                for (String tipoDato : this.todosTiposDatos) {
-                                    if (tipo.contains(tipoDato)) {
-                                        switch (tipoDato) {
-                                            case "bit":
-                                            case "bool":
-                                            case "tinyint":
-                                            case "smallint":
-                                            case "mediumint":
-                                            case "int":
-                                            case "bigint":
-                                            case "float":
-                                            case "double":
-                                                if (row.getCell(indx).getCellType() != CellType.NUMERIC) {
-                                                    return this.mensaje = "La columna '"+ nombre +"' es del tipo de dato 'numérico' y existe un dato que no es de este mismo tipo en la fila: " + (cell.getRowIndex() + 1);
-                                                }
-                                                break;
-                                            case "tinytext":
-                                            case "varchar":
-                                            case "char":
-                                            case "text":
-                                            case "mediumtext":
-                                            case "blob":
-                                                if (row.getCell(indx).getCellType() != CellType.STRING) {
-                                                    return this.mensaje = "La columna '"+ nombre +"' es de tipo de dato 'caracteres o cadenas de texto' y existe un dato que no es de este mismo tipo en la fila: " + (cell.getRowIndex() + 1);
-                                                }
-                                                break;
-                                            default:
-                                                return (tipoDato + " tipo de dato no encontrado");
-                    }}}}}}
-                        indx++;
-                }}
-            }
-
-            // Cerrar el file inputstream
-            inputStream.close();
         } catch (RuntimeException | IOException e) {
             throw new ErrorProcessException(e.getMessage());
         }
-        //ACA REUNIR LO NECESARIO PARA ENVIAR EL OBJETO ARCHIVO A LA BASE DE DATOS
-        String nombreTabla = serviceTabla.getNombre(id_tabla);
-        System.out.println(nombreTabla);
+    }
 
-        Date fechaActual = new Date();
+    public String readAndCheckFile (InputStream inputStream, MultipartFile multipartFiles, Integer id_tabla, Integer id_usuario) throws IOException, ErrorProcessException {
+        Workbook workbook = WorkbookFactory.create(inputStream);
+        Sheet sheet = workbook.getSheetAt(0);
+        System.out.println("lectura de archivo...");
 
+        for (Row row : sheet) {
+            short indx = 0;
+
+            for (Cell cell : row) {
+                maxCantidadColumnas = esquemaBaseDatos.size();
+                while (indx < maxCantidadColumnas) {
+
+                    if (cell.getRowIndex() == 0 ) {
+                        switch (checkColumnNames(row, cell)) {
+                            case "nameNull":
+                                return mensaje = "En el archivo ingresado existe una columna con nombre en NULL y esto no pertenece a la estructura de la tabla";
+                            case "differentNames":
+                                return mensaje = "El archivo ingresado no tiene los mismos nombres de columnas que los establecidos en el schema, la columna '" + (cell.getColumnIndex() + 1) + "' no pertenece a la estructura de la tabla";
+                            case "differentNumberOfColumns":
+                                return mensaje = "El archivo ingresado no tiene la misma cantidad de columnas que las establecidas en el schema, columnas contadas: " + row.getLastCellNum() + ", esperadas: " + esquemaBaseDatos.size();
+                            default:
+                                break;
+                        }
+                    }
+                    if (cell.getRowIndex() > 0) {
+                        switch (checkCellsWithData (row, indx)) {
+                            case "nullData":
+                                return mensaje = "La columna '" + nombreColumna + "' es de tipo NOTNULL y existen datos que son NULL o BLANK en la fila: " + (cell.getRowIndex() + 1);
+                            case "checkDataTypeNumeric":
+                                return mensaje = "La columna '"+ nombreColumna +"' es del tipo de dato 'numérico' y existe un dato que no es de este mismo tipo en la fila: " + (cell.getRowIndex() + 1);
+                            default:
+                                break;
+                        }
+                    }
+                    indx++;
+                }
+                if (indx == maxCantidadColumnas) {
+                    indx = 0;
+                }
+            }
+        }
+        inputStream.close();
+        return fileReadyToSave(multipartFiles, id_tabla, id_usuario);
+    }
+
+    public String checkColumnNames (Row row, Cell cell) {
+        if(row.getLastCellNum() == esquemaBaseDatos.size()) {
+            short indxFor = 0;
+            for (String[] elem : esquemaBaseDatos) {
+                String nombre = elem[0].toLowerCase();
+
+                if (indxFor == cell.getColumnIndex()){
+                    if (row.getCell(indxFor) == null || cell.getCellType() == CellType.BLANK) {
+                        return "nameNull";
+                    }
+                    if (esquemaBaseDatos.indexOf(elem) == indxFor && !row.getCell(indxFor).getStringCellValue().toLowerCase().equals(nombre)) {
+                        return "differentNames";
+                    }
+                }
+                indxFor++;
+            }
+        } else {
+            return "differentNumberOfColumns";
+        }
+        return "ok";
+    }
+
+    public String checkCellsWithData (Row row, short indx) {
+        for (String[] elem : esquemaBaseDatos) {
+            nombreColumna = elem[0];
+            String tipo = elem[1];
+            String nullNotNull = elem[2].toLowerCase();
+
+            if(esquemaBaseDatos.indexOf(elem) == indx) {
+                if (row.getCell(indx) == null || row.getCell(indx).getCellType() == CellType.BLANK) {
+                    if ( nullNotNull.equals("notnull")) {
+                        return "nullData";
+                    }
+                } else {
+                    for (String tipoDato : this.todosTiposDatos) {
+                        if (tipo.contains(tipoDato) && row.getCell(indx).getCellType() != CellType.NUMERIC) {
+                            return "checkDataTypeNumeric";
+                        }
+                    }
+                }
+            }
+        }
+        return "ok";
+    }
+
+    public String fileReadyToSave (MultipartFile multipartFiles, Integer id_tabla, Integer id_usuario) throws ErrorProcessException, IOException {
         Archivo archivo = new Archivo();
 
-        archivo.setNombre_Tabla(nombreTabla);
-        archivo.setUltima_actualizacion(fechaActual);
+        archivo.setNombre_Tabla(serviceTabla.getNombre(id_tabla));
+        archivo.setUltima_actualizacion(new Date());
         archivo.setArchivo(multipartFiles.getBytes());
         archivo.setId_usuario(id_usuario);
         archivo.setId_tabla(id_tabla);
 
         repository.save(archivo);
+        System.out.println("subió el archivo...");
 
-        return this.mensaje = "Pasó todos los controles de estructura y calidad";
+        return mensaje = "Pasó todos los controles de estructura y calidad";
+
     }
-}
+ }
+
