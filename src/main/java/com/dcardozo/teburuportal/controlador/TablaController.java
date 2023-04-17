@@ -1,6 +1,8 @@
 package com.dcardozo.teburuportal.controlador;
 
 import com.dcardozo.teburuportal.dominio.Tabla;
+import com.dcardozo.teburuportal.dto.TablaCreatedOrUpdatedDTO;
+import com.dcardozo.teburuportal.dto.TablaDTO;
 import com.dcardozo.teburuportal.exception.ErrorProcessException;
 import com.dcardozo.teburuportal.servicio.TablaService;
 import io.swagger.annotations.Api;
@@ -44,13 +46,13 @@ public class TablaController {
 
     @GetMapping("/{id_tabla}")
     @ApiOperation(value = "Obtener tabla por id_tabla")
-    public ResponseEntity<Tabla> getTablaDetalle(@PathVariable Integer id_tabla) throws ErrorProcessException {
+    public ResponseEntity<TablaDTO> getTablaDetalle(@PathVariable Integer id_tabla) throws ErrorProcessException {
         return ResponseEntity.ok(service.getTablaById(id_tabla));
     }
 
     @PostMapping
     @ApiOperation(value = "Crear tabla")
-    public ResponseEntity<Tabla> postNuevaTabla(@Valid @RequestBody Tabla tabla) throws ErrorProcessException {
+    public ResponseEntity<TablaCreatedOrUpdatedDTO> postNuevaTabla(@Valid @RequestBody Tabla tabla) throws ErrorProcessException {
         return ResponseEntity.status(HttpStatus.CREATED).body(service.crearTablaServicio(tabla));
     }
 

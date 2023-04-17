@@ -1,6 +1,8 @@
 package com.dcardozo.teburuportal.servicio;
 
 import com.dcardozo.teburuportal.dominio.Tabla;
+import com.dcardozo.teburuportal.dto.TablaCreatedOrUpdatedDTO;
+import com.dcardozo.teburuportal.dto.TablaDTO;
 import com.dcardozo.teburuportal.exception.ErrorProcessException;
 import org.springframework.http.ResponseEntity;
 
@@ -15,11 +17,11 @@ public interface TablaService {
 
     String getNombre(Integer id_tabla) throws ErrorProcessException;
 
-    Tabla getTablaById(Integer id_tabla) throws ErrorProcessException;
+    TablaDTO getTablaById(Integer id_tabla) throws ErrorProcessException;
 
-    Tabla updateTabla(Integer id_tabla, Tabla tabla) throws ErrorProcessException;
+    TablaCreatedOrUpdatedDTO updateTabla(Integer id_tabla, Tabla tabla) throws ErrorProcessException;
 
-    Tabla crearTablaServicio(Tabla tabla) throws ErrorProcessException;
+    TablaCreatedOrUpdatedDTO crearTablaServicio(Tabla tabla) throws ErrorProcessException;
 
     ResponseEntity<?> deleteTablaById(Integer idTabla) throws ErrorProcessException;
 }

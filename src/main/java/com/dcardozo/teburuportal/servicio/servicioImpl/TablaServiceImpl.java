@@ -1,6 +1,9 @@
 package com.dcardozo.teburuportal.servicio.servicioImpl;
 
 import com.dcardozo.teburuportal.dominio.Tabla;
+import com.dcardozo.teburuportal.dto.TablaCreatedOrUpdatedDTO;
+import com.dcardozo.teburuportal.dto.TablaDTO;
+import com.dcardozo.teburuportal.dto.mapper.TablaMapper;
 import com.dcardozo.teburuportal.exception.BadRequestException;
 import com.dcardozo.teburuportal.exception.ErrorProcessException;
 import com.dcardozo.teburuportal.exception.NotFoundException;
@@ -20,6 +23,7 @@ public class TablaServiceImpl implements TablaService {
     private final String ERROR_NOT_FOUND = "During the process an error occurred: ";
     Tabla tablaActualizada = new Tabla();
     private final TablaRepository repository;
+    private final TablaMapper tablaMapper;
 
     @Override
     public List<Tabla> getAllTablasByIdProyecto(Integer id_proyecto) throws ErrorProcessException {
@@ -67,35 +71,35 @@ public class TablaServiceImpl implements TablaService {
     }
 
     @Override
-    public Tabla getTablaById(Integer id_tabla) throws ErrorProcessException {
+    public TablaDTO getTablaById(Integer id_tabla) throws ErrorProcessException {
         Tabla foundTabla = repository.getTablaById(id_tabla).orElseThrow(() -> new NotFoundException("Tabla id: " + id_tabla + ", not found in database"));
         try {
-            return foundTabla;
+            return tablaMapper.entityToTablaDTO(foundTabla);
         } catch (RuntimeException e) {
             throw new ErrorProcessException(ERROR_NOT_FOUND + e.getMessage());
         }
     }
 
     @Override
-    public Tabla updateTabla(Integer id_tabla, Tabla tabla) throws ErrorProcessException {
+    public TablaCreatedOrUpdatedDTO updateTabla(Integer id_tabla, Tabla tabla) throws ErrorProcessException {
         Tabla foundTabla = repository.getTablaById(id_tabla).orElseThrow(() -> new NotFoundException("Tabla " + tabla.getNombre() + " not found in database"));
         try {
             tablaActualizada = foundTabla;
             tablaActualizada.setNombre(tabla.getNombre());
             tablaActualizada.setEsquema(tabla.getEsquema());
-            return repository.save(tablaActualizada);
+            return tablaMapper.entityToTablaCreatedOrUpdatedDTO(repository.save(tablaActualizada));
         } catch (RuntimeException e) {
             throw new ErrorProcessException(ERROR_NOT_FOUND + e.getMessage());
         }
     }
 
     @Override
-    public Tabla crearTablaServicio(Tabla tabla) throws ErrorProcessException {
+    public TablaCreatedOrUpdatedDTO crearTablaServicio(Tabla tabla) throws ErrorProcessException {
         if (repository.findTablaByNombre(tabla.getNombre()) != null) {
             throw new BadRequestException("Existing tabla in database");
         }
         try {
-            return repository.save(tabla);
+            return tablaMapper.entityToTablaCreatedOrUpdatedDTO(repository.save(tabla));
         } catch (RuntimeException e) {
             throw new ErrorProcessException(ERROR_NOT_FOUND + e.getMessage());
         }
